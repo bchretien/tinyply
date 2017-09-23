@@ -75,18 +75,18 @@ bool PlyFile::parse_header(std::istream & is)
         {
             continue;
         }
-        else if (token == "comment")    read_header_text(line, ls, comments, 8);
+        else if (token == "comment")    read_header_text(line, comments, 8);
         else if (token == "format")     read_header_format(ls);
         else if (token == "element")    read_header_element(ls);
         else if (token == "property")   read_header_property(ls);
-        else if (token == "obj_info")   read_header_text(line, ls, objInfo, 9);
+        else if (token == "obj_info")   read_header_text(line, objInfo, 9);
         else if (token == "end_header") break;
         else return false;
     }
     return true;
 }
 
-void PlyFile::read_header_text(std::string line, std::istream & is, std::vector<std::string>& place, int erase)
+void PlyFile::read_header_text(std::string line, std::vector<std::string>& place, int erase)
 {
     place.push_back((erase > 0) ? line.erase(0, erase) : line);
 }
@@ -232,7 +232,7 @@ void PlyFile::write_binary_internal(std::ostream & os)
                         memcpy(listSize, &p.listCount, sizeof(uint32_t));
                         size_t dummyCount = 0;
                         write_property_binary(p.listType, os, listSize, dummyCount);
-                        for (int j = 0; j < p.listCount; ++j)
+                        for (size_t j = 0; j < p.listCount; ++j)
                         {
                             write_property_binary(p.propertyType, os, (cursor->data + cursor->offset), cursor->offset);
                         }
@@ -251,7 +251,7 @@ void PlyFile::write_binary_internal(std::ostream & os)
                         size_t dummyCount = 0;
                         write_property_binary(p.listType, os, listSize, dummyCount);
                         if (src_size > 0) assert(src_data);
-                        for (int j = 0; j < src_size; ++j)
+                        for (size_t j = 0; j < src_size; ++j)
                         {
                             write_property_binary(p.propertyType, os, (src_data + offset), offset);
                         }
@@ -290,7 +290,7 @@ void PlyFile::write_ascii_internal(std::ostream & os)
                     if (p.listCount >= 1)
                     {
                         os << p.listCount;
-                        for (int j = 0; j < p.listCount; ++j)
+                        for (size_t j = 0; j < p.listCount; ++j)
                         {
                             os << " ";
                             write_property_ascii(p.propertyType, os, (cursor->data + cursor->offset), cursor->offset);
@@ -306,7 +306,7 @@ void PlyFile::write_ascii_internal(std::ostream & os)
                         get_size(p.propertyType, src_vec, src_size);
 
                         os << src_size;
-                        for (int j = 0; j < src_size; ++j)
+                        for (size_t j = 0; j < src_size; ++j)
                         {
                             os << " ";
                             write_property_ascii(p.propertyType, os, (src_data + offset), offset);
